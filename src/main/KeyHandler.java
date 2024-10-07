@@ -69,29 +69,65 @@ public class KeyHandler implements KeyListener {
         }
         // Title state
         else if (gp.gameState == gp.titleState) {
-            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
-                if (gp.ui.commandNumber >= 1) gp.ui.commandNumber--;
-                else gp.ui.commandNumber = 0;
-            }
-            else if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
-                if (gp.ui.commandNumber < 2) gp.ui.commandNumber++;
-                else gp.ui.commandNumber = 2;
-            }
-            else if (code == KeyEvent.VK_ENTER) {
-                switch (gp.ui.commandNumber) {
-                    case 0:
-                        gp.gameState = gp.playState;
-                        gp.playMusic(0);
-                        break;
-                    case 1:
-                        // Do load game
+            if (gp.ui.titleScreenState == 0) {
+                if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                    if (gp.ui.commandNumber >= 1) gp.ui.commandNumber--;
+                    else gp.ui.commandNumber = 0;
+                } else if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
+                    if (gp.ui.commandNumber < 2) gp.ui.commandNumber++;
+                    else gp.ui.commandNumber = 2;
+                } else if (code == KeyEvent.VK_ENTER) {
+                    switch (gp.ui.commandNumber) {
+                        case 0:
+                            // Switch to the class selection
+                            gp.ui.titleScreenState = 1;
+                            gp.playMusic(0);
+                            break;
+                        case 1:
+                            // Do load game
 
-                        gp.gameState = gp.playState;
-                        gp.playMusic(0);
-                        break;
-                    case 2:
-                        System.exit(0);
-                        break;
+                            gp.gameState = gp.playState;
+                            gp.playMusic(0);
+                            break;
+                        case 2:
+                            System.exit(0);
+                            break;
+                    }
+                }
+            }
+            else if (gp.ui.titleScreenState == 1) {
+                // Class selection state
+                if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                    if (gp.ui.commandNumber >= 1) gp.ui.commandNumber--;
+                    else gp.ui.commandNumber = 0;
+                } else if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
+                    if (gp.ui.commandNumber < 3) gp.ui.commandNumber++;
+                    else gp.ui.commandNumber = 3;
+                } else if (code == KeyEvent.VK_ENTER) {
+                    switch (gp.ui.commandNumber) {
+                        case 0:
+                            // Warrior class
+
+                            gp.gameState = gp.playState;
+                            break;
+                        case 1:
+                            // Fighter class
+
+                            gp.gameState = gp.playState;
+                            break;
+                        case 2:
+                            // Wizard class
+
+                            gp.gameState = gp.playState;
+                            break;
+                        case 3:
+                            // Switch to the title screen
+                            gp.ui.titleScreenState = 0;
+                            gp.gameState = gp.titleState;
+                            gp.stopMusic();
+                            break;
+                    }
+
                 }
             }
         }
