@@ -11,13 +11,7 @@ public class Door extends SuperObject{
     public Door(GamePanel gp) {
         this.gp = gp;
         name = "Door";
-        try {
-            image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
-                    "object/door.png")));
-            image = utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        image = getObjectImage("door", gp.tileSize, gp.tileSize);
         collision = true;
     }
 

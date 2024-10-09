@@ -10,13 +10,8 @@ public class Boots extends SuperObject {
     GamePanel gp;
     public Boots(GamePanel gp) {
         name = "Boots";
+        this.gp = gp;
+        image = getObjectImage("boots", gp.tileSize, gp.tileSize);
 
-        try {
-            image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
-                    "object/boots.png")));
-            image = utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

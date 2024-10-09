@@ -1,6 +1,9 @@
 package main;
 
+import obj.Heart;
 import obj.Key;
+import obj.Mana;
+import obj.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,10 +19,12 @@ public class UI {
     public String currentDialogue = "";
     public int dialogueIndex = 0;
     public int commandNumber = 0;
+    BufferedImage heart_full, heart_half, heart_blank, health_bar, health_bar_decoration;
+    BufferedImage mana_bar, mana_bar_decoration;
+    SuperObject heart, mana;
 
     // smaller state of title
     public int titleScreenState = 0;
-
     Font maruMonica, purisaBold;
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -35,6 +40,18 @@ public class UI {
         } catch (FontFormatException | IOException e) {
             throw new RuntimeException(e);
         }
+
+        // Create hub object
+        heart = new Heart(gp);
+        heart_full = heart.imageArray[0];
+        heart_half = heart.imageArray[1];
+        heart_blank = heart.imageArray[2];
+        health_bar = heart.imageArray[3];
+        health_bar_decoration = heart.imageArray[4];
+
+        mana = new Mana(gp);
+        mana_bar = mana.imageArray[2];
+        mana_bar_decoration = mana.imageArray[3];
     }
 
     public void draw(Graphics2D g2) {
@@ -51,17 +68,60 @@ public class UI {
 
         else if (gp.gameState == gp.playState) {
             // Do play state
+            drawPlayerLife();
+            drawPlayerMana();
 
         }
         else if (gp.gameState == gp.pauseState) {
+            drawPlayerLife();
+            drawPlayerMana();
             drawPauseScreen();
         }
         
         // Dialog state
         else if (gp.gameState == gp.dialogueState) {
+            drawPlayerLife();
+            drawPlayerMana();
             drawDialogueScreen();
         }
     }
+
+    public void drawPlayerMana() {
+        int x = gp.tileSize/4;
+        int y = gp.tileSize/4 + gp.tileSize;
+        g2.drawImage(mana_bar_decoration, x, y, null);
+
+        int mana_bar_width = (int) (46 * 3 * ((double) gp.player.currentMana / gp.player.maxMana));
+        if (mana_bar_width > 0) {
+            mana_bar = mana.getObjectImage("mana_bar", mana_bar_width, 7 * 3);
+            g2.drawImage(mana_bar, x + 17 * 3, y + 5 * 3, null);
+        }
+
+        // Draw text to show player health as number
+        String text = gp.player.currentMana + "/" + gp.player.maxMana;
+        g2.setFont(purisaBold);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.drawString(text, x + 23 * 3, y + 32);
+    }
+
+    public void drawPlayerLife() {
+        int x = gp.tileSize/4;
+        int y = gp.tileSize/4;
+        g2.drawImage(health_bar_decoration, x, y, null);
+
+        int health_bar_width = (int) (46 * 3 * ((double) gp.player.currentLife / gp.player.maxLife));
+        if (health_bar_width > 0) {
+            health_bar = heart.getObjectImage("health_bar", health_bar_width, 7 * 3);
+            g2.drawImage(health_bar, x + 17 * 3, y + 5 * 3, null);
+        }
+
+        // Draw text to show player health as number
+        String text = gp.player.currentLife + "/" + gp.player.maxLife;
+        g2.setFont(purisaBold);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.drawString(text, x + 23 * 3, y + 32);
+    }
+
 
 
     String[] directionArray = {"down", "left", "right"};
@@ -186,6 +246,7 @@ public class UI {
 
         x += gp.tileSize;
         y += gp.tileSize;
+        g2.setFont(maruMonica);
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
         if (currentDialogue == null) {
             gp.ui.dialogueIndex = 0;

@@ -3,12 +3,16 @@ package obj;
 import main.GamePanel;
 import main.UtilityTool;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class SuperObject {
 
     public BufferedImage image;
+    public BufferedImage[] imageArray;
     public String name;
     public boolean collision = false;
     public int worldX, worldY;
@@ -27,5 +31,17 @@ public class SuperObject {
                 && worldY > gp.player.worldY - gp.player.screenY - gp.tileSize
                 && worldY < gp.player.worldY + gp.player.screenY + gp.tileSize)
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+    }
+
+    public BufferedImage getObjectImage(String imageFileName, int width, int height) {
+        BufferedImage result = null;
+        try {
+            result = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
+                    "object/" + imageFileName + ".png")));
+            result = utilityTool.scaleImage(result, width, height);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

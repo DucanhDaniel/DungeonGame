@@ -11,6 +11,9 @@ public class Player extends Entity{
 
     public final int screenX, screenY;
 
+    // Player's mana
+    public int maxMana, currentMana;
+
     public Player(GamePanel gp, KeyHandler keyHandler) {
         super(gp);
 
@@ -35,6 +38,13 @@ public class Player extends Entity{
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
         speed = 4;
+
+        // Player status
+        maxLife = 1200;
+        currentLife = 1200;
+        maxMana = 200;
+        currentMana = 200;
+
     }
 
     public void getPlayerImage() {
