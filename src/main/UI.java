@@ -1,5 +1,6 @@
 package main;
 
+import entity.Entity;
 import obj.*;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public class UI {
     BufferedImage armorBar;
 
     StatusPanel sp;
-    SuperObject heart, mana;
+    Entity heart, mana;
 
     // smaller state of title
     public int titleScreenState = 0;

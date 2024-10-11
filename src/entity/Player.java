@@ -28,7 +28,7 @@ public class Player extends Entity{
 
         // Set the solid area for collision detection
         solidArea = new Rectangle();
-        solidArea.setBounds(3* gp.scale, 16* gp.scale, 10 * gp.scale, 12 * gp.scale);
+        solidArea.setBounds(3* gp.scale, 13* gp.scale, 10 * gp.scale, 15 * gp.scale);
 
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -163,6 +163,7 @@ public class Player extends Entity{
             default -> null;
         };
         g2.drawImage(image, screenX, screenY, null);
+        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
 
 

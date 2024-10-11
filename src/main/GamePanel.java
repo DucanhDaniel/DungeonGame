@@ -2,11 +2,13 @@ package main;
 
 import entity.Entity;
 import entity.Player;
-import obj.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static java.awt.Color.BLACK;
 
@@ -39,9 +41,10 @@ public class GamePanel extends JPanel implements Runnable{
     public EventHandler eventHandler;
 
     // Entity and Object
-    public SuperObject[] superObject = new SuperObject[10];
+    public Entity[] superObject = new Entity[10];
     public Player player = new Player(this, keyHandler);
     public Entity[] npc = new Entity[10];
+    ArrayList<Entity> entityList= new ArrayList<>();
 
     // Game state
     public int gameState;
@@ -140,16 +143,26 @@ public class GamePanel extends JPanel implements Runnable{
             // Draw tile
             tileManager.draw(g2);
 
-            // Draw super objects
-            for (SuperObject so : superObject) {
-                if (so!= null) so.draw(g2, this);
+            // Add entity into entityList
+            entityList.add(player);
+            for (Entity entity : npc) {
+                if (entity!= null) entityList.add(entity);
             }
 
-            // Draw NPCs
-            for (Entity entity : npc) if (entity != null) entity.draw(g2);
+            for (Entity entity : superObject) {
+                if (entity!= null) entityList.add(entity);
+            }
 
-            // Draw player
-            player.draw(g2);
+            // Sort
+            entityList.sort(Comparator.comparingInt(o -> o.worldY));
+
+            // Draw entity
+            for (Entity entity : entityList) {
+                entity.draw(g2);
+            }
+
+            entityList.clear();
+
 
             // Draw UI
             ui.draw(g2);

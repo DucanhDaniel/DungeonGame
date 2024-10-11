@@ -11,6 +11,11 @@ import java.util.Objects;
 
 // Store variables that will be use in player, monster and  NPC classes
 public class Entity {
+    public BufferedImage image;
+    public BufferedImage[] imageArray;
+    public String name;
+    public boolean collision = false;
+
     public int worldX, worldY;
     public int speed;
 
@@ -33,6 +38,19 @@ public class Entity {
 
     public Entity(GamePanel gp) {
         this.gp = gp;
+    }
+
+    UtilityTool utilityTool = new UtilityTool();
+    public BufferedImage getObjectImage(String imageFileName, int width, int height) {
+        BufferedImage result = null;
+        try {
+            result = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
+                    "object/" + imageFileName + ".png")));
+            result = utilityTool.scaleImage(result, width, height);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public void speak(){}
@@ -78,7 +96,9 @@ public class Entity {
         if (isIdle) {
             switch (direction) {
                 case "up" -> image = idle_up;
-                case "down" -> image = idle_down;
+                case "down" -> {
+                    image = idle_down;
+                }
                 case "left" -> image = idle_left;
                 case null, default -> image = idle_right;
             }
@@ -109,6 +129,9 @@ public class Entity {
                 default -> null;
             };
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+
+            // Draw solid area for debugging purposes
+            g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
         }
     }
 

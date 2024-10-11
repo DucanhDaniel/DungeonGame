@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 
+import java.awt.*;
 import java.util.Random;
 
 public class NPC_OldMan extends Entity{
@@ -15,6 +16,11 @@ public class NPC_OldMan extends Entity{
         getOldManImage();
     }
     public void setDefaultValue() {
+
+        solidArea.setBounds(0, 20, 48, 28);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
         numAnimationFrames = 2;
         direction = "down";
         speed = 1;
