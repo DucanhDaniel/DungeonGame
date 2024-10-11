@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable{
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssertSetter assertSetter = new AssertSetter(this);
     public UI ui = new UI(this);
+    public EventHandler eventHandler;
 
     // Entity and Object
     public SuperObject[] superObject = new SuperObject[10];
@@ -59,6 +60,7 @@ public class GamePanel extends JPanel implements Runnable{
         this.setDoubleBuffered(true); // Make game render better
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
+        this.eventHandler = new EventHandler(this);
     }
 
     public void setupGame() {

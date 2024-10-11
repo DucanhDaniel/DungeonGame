@@ -1,9 +1,6 @@
 package main;
 
-import obj.Heart;
-import obj.Key;
-import obj.Mana;
-import obj.SuperObject;
+import obj.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,8 +16,16 @@ public class UI {
     public String currentDialogue = "";
     public int dialogueIndex = 0;
     public int commandNumber = 0;
+
     BufferedImage heart_full, heart_half, heart_blank, health_bar, health_bar_decoration;
     BufferedImage mana_bar, mana_bar_decoration;
+
+    BufferedImage statusPanel;
+    BufferedImage manaBar;
+    BufferedImage healthBar;
+    BufferedImage armorBar;
+
+    StatusPanel sp;
     SuperObject heart, mana;
 
     // smaller state of title
@@ -52,6 +57,13 @@ public class UI {
         mana = new Mana(gp);
         mana_bar = mana.imageArray[2];
         mana_bar_decoration = mana.imageArray[3];
+
+        sp = new StatusPanel(gp);
+        statusPanel = sp.image;
+        healthBar = sp.imageArray[0];
+        armorBar = sp.imageArray[1];
+        manaBar = sp.imageArray[2];
+
     }
 
     public void draw(Graphics2D g2) {
@@ -68,22 +80,52 @@ public class UI {
 
         else if (gp.gameState == gp.playState) {
             // Do play state
-            drawPlayerLife();
-            drawPlayerMana();
-
+            drawPlayerStatus();
         }
         else if (gp.gameState == gp.pauseState) {
-            drawPlayerLife();
-            drawPlayerMana();
+            drawPlayerStatus();
             drawPauseScreen();
         }
         
         // Dialog state
         else if (gp.gameState == gp.dialogueState) {
-            drawPlayerLife();
-            drawPlayerMana();
+            drawPlayerStatus();
             drawDialogueScreen();
         }
+    }
+
+    public void drawPlayerStatus() {
+        int x = gp.tileSize/4;
+        int y = gp.tileSize/4;
+
+        g2.drawImage(statusPanel, x, y, null);
+
+        // Scale healthBar, armorBar, manaBar to precisely match the current state
+        int width = (int)(sp.barWidth * (1.0 * gp.player.currentLife / gp.player.maxLife));
+        healthBar = sp.getObjectImage("health_bar_new", width, healthBar.getHeight());
+
+        width = (int)(sp.barWidth * (1.0 * gp.player.currentArmor / gp.player.maxArmor));
+        armorBar = sp.getObjectImage("armor_bar_new", width, armorBar.getHeight());
+
+        width = (int)(sp.barWidth * (1.0 * gp.player.currentMana / gp.player.maxMana));
+        manaBar = sp.getObjectImage("mana_bar_new", width, manaBar.getHeight());
+
+        // Draw health bar, armor bar, mana bar
+        g2.drawImage(healthBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1, null);
+        g2.drawImage(armorBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 29, null);
+        g2.drawImage(manaBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 56, null);
+
+        // Draw text to show number
+        String text = gp.player.currentLife + "/" + gp.player.maxLife;
+        g2.setFont(purisaBold);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.drawString(text, x + 65 / 3 * 2 + 15, y + 25);
+
+        text = gp.player.currentArmor + "/" + gp.player.maxArmor;
+        g2.drawString(text, x + 65 / 3 * 2 + 15, y + 25 + 28);
+
+        text = gp.player.currentMana + "/" + gp.player.maxMana;
+        g2.drawString(text, x + 65 / 3 * 2 + 15, y + 25 + 55);
     }
 
     public void drawPlayerMana() {

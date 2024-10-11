@@ -14,6 +14,9 @@ public class Player extends Entity{
     // Player's mana
     public int maxMana, currentMana;
 
+    // Player's armor
+    public int maxArmor, currentArmor;
+
     public Player(GamePanel gp, KeyHandler keyHandler) {
         super(gp);
 
@@ -44,6 +47,8 @@ public class Player extends Entity{
         currentLife = 1200;
         maxMana = 200;
         currentMana = 200;
+        maxArmor = 20;
+        currentArmor = 20;
 
     }
 
@@ -63,6 +68,7 @@ public class Player extends Entity{
     public boolean doneInteractingNPC = false;
     @Override
     public void update() {
+//        System.out.println(worldX + " - " + worldY);
 
         if (keyHandler.upPressed && keyHandler.rightPressed) {
             if (keyHandler.timeUpPressed > keyHandler.timeRightPressed) {
@@ -118,6 +124,8 @@ public class Player extends Entity{
                     break;
             }
         }
+        // Check event
+        gp.eventHandler.checkEvent();
 
         // Check object collision
         pickUpObject(objectIndex);
