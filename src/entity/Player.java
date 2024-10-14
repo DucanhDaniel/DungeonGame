@@ -9,7 +9,8 @@ import java.awt.image.BufferedImage;
 public class Player extends Entity{
     KeyHandler keyHandler;
 
-    public final int screenX, screenY;
+    public final int screenX;
+    public final int screenY;
 
     // Player's mana
     public int maxMana, currentMana;
@@ -17,18 +18,21 @@ public class Player extends Entity{
     // Player's armor
     public int maxArmor, currentArmor;
 
+    public boolean invincible = false;
+    public int invincibleCounter = 0;
+
     public Player(GamePanel gp, KeyHandler keyHandler) {
         super(gp);
 
         this.keyHandler = keyHandler;
         setDefaultValues();
 
-        screenX = gp.screenWidth/2 - gp.tileSize/2;
-        screenY = gp.screenHeight/2 - gp.tileSize/2;
+        screenX = gp.screenWidth/2 - gp.tileSize/2 - 16 * gp.scale;
+        screenY = gp.screenHeight/2 - gp.tileSize/2 - 16 * gp.scale;
 
         // Set the solid area for collision detection
         solidArea = new Rectangle();
-        solidArea.setBounds(3* gp.scale, 13* gp.scale, 10 * gp.scale, 15 * gp.scale);
+        solidArea.setBounds(18* gp.scale, 32* gp.scale, 13 * gp.scale, 12 * gp.scale);
 
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -37,6 +41,8 @@ public class Player extends Entity{
         getPlayerImage();
     }
     public void setDefaultValues() {
+        type = 0;
+
         numAnimationFrames = 8;
         worldX = gp.tileSize * 23;
         worldY = gp.tileSize * 21;
@@ -53,48 +59,43 @@ public class Player extends Entity{
     }
 
     public void getPlayerImage() {
+        int playerImageWidth = 48 * gp.scale;
+        int playerImageHeight = 64 * gp.scale;
         for (int i = 1; i <= numAnimationFrames; i++) {
-            up[i - 1] = setUp("player/up" + i, gp.tileSize, 2*gp.tileSize);
-            down[i - 1] = setUp("player/down" + i, gp.tileSize, 2*gp.tileSize);
-            left[i - 1] = setUp("player/left" + i, gp.tileSize, 2*gp.tileSize);
-            right[i - 1] = setUp("player/right" + i, gp.tileSize, 2*gp.tileSize);
-            idle_up[i - 1] = setUp("player/idle_up" + i, gp.tileSize, 2*gp.tileSize);
-            idle_down[i - 1] = setUp("player/idle_down" + i, gp.tileSize, 2*gp.tileSize);
-            idle_left[i - 1] = setUp("player/idle_left" + i, gp.tileSize, 2*gp.tileSize);
-            idle_right[i - 1] = setUp("player/idle_right" + i, gp.tileSize, 2*gp.tileSize);
+            up[i - 1] = setUp("player/up" + i, playerImageWidth, playerImageHeight);
+            down[i - 1] = setUp("player/down" + i, playerImageWidth, playerImageHeight);
+            left[i - 1] = setUp("player/left" + i, playerImageWidth, playerImageHeight);
+            right[i - 1] = setUp("player/right" + i, playerImageWidth, playerImageHeight);
+            up_left[i - 1] = setUp("player/up_left" + i, playerImageWidth, playerImageHeight);
+            up_right[i - 1] = setUp("player/up_right" + i, playerImageWidth, playerImageHeight);
+            down_left[i - 1] = setUp("player/down_left" + i, playerImageWidth, playerImageHeight);
+            down_right[i - 1] = setUp("player/down_right" + i, playerImageWidth, playerImageHeight);
+            
+            idle_up[i - 1] = setUp("player/idle_up" + i, playerImageWidth, playerImageHeight);
+            idle_down[i - 1] = setUp("player/idle_down" + i, playerImageWidth, playerImageHeight);
+            idle_left[i - 1] = setUp("player/idle_left" + i, playerImageWidth, playerImageHeight);
+            idle_right[i - 1] = setUp("player/idle_right" + i, playerImageWidth, playerImageHeight);
+            idle_up_left[i - 1] = setUp("player/idle_up_left" + i, playerImageWidth, playerImageHeight);
+            idle_up_right[i - 1] = setUp("player/idle_up_right" + i, playerImageWidth, playerImageHeight);
+            idle_down_left[i - 1] = setUp("player/idle_down_left" + i, playerImageWidth, playerImageHeight);
+            idle_down_right[i - 1] = setUp("player/idle_down_right" + i, playerImageWidth, playerImageHeight);
         }
     }
 
     public boolean doneInteractingNPC = false;
     @Override
     public void update() {
-//        System.out.println(worldX + " - " + worldY);
-
-        if (keyHandler.upPressed && keyHandler.rightPressed) {
-            if (keyHandler.timeUpPressed > keyHandler.timeRightPressed) {
-                direction = "up";
-            }
-            else direction = "right";
+        // Update the player's direction based on the pressed keys'
+        if (keyHandler.upPressed) {
+            if (keyHandler.rightPressed) direction = "up_right";
+            else if (keyHandler.leftPressed) direction = "up_left";
+            else direction = "up";
         }
-        else if (keyHandler.upPressed && keyHandler.leftPressed) {
-            if (keyHandler.timeUpPressed > keyHandler.timeLeftPressed) {
-                direction = "up";
-            }
-            else direction = "left";
+        else if (keyHandler.downPressed) {
+            if (keyHandler.rightPressed) direction = "down_right";
+            else if (keyHandler.leftPressed) direction = "down_left";
+            else direction = "down";
         }
-        else if (keyHandler.downPressed && keyHandler.rightPressed) {
-            if (keyHandler.timeDownPressed > keyHandler.timeRightPressed) {
-                direction = "down";
-            }
-            else direction = "right";
-        }
-        else if (keyHandler.downPressed && keyHandler.leftPressed) {
-            if (keyHandler.timeDownPressed > keyHandler.timeLeftPressed) {
-                direction = "down";
-            }
-            else direction = "left";
-        } else if (keyHandler.downPressed) direction = "down";
-        else if (keyHandler.upPressed) direction = "up";
         else if (keyHandler.leftPressed) direction = "left";
         else if (keyHandler.rightPressed) direction = "right";
 
@@ -107,6 +108,11 @@ public class Player extends Entity{
         if (!doneInteractingNPC)
             interactNPC(npcIndex);
 
+        // Check monsters collision
+        int monsterIndex = gp.collisionChecker.checkEntity(this, gp.monster);
+        if (monsterIndex != 999) contactMonster(gp.monster[monsterIndex]);
+
+        // Update the player's position base on position
         int objectIndex = gp.collisionChecker.checkObject(this, true);
         if (!collisionOn) {
             switch (direction) {
@@ -122,6 +128,30 @@ public class Player extends Entity{
                 case "right":
                     if (keyHandler.rightPressed) worldX += speed;
                     break;
+                case "up_left":
+                    if (keyHandler.upPressed && keyHandler.leftPressed) {
+                        worldX -= speed/4 * 3;
+                        worldY -= speed/4 * 3;
+                    }
+                    break;
+                case "up_right":
+                    if (keyHandler.upPressed && keyHandler.rightPressed) {
+                        worldX += speed/4 * 3;
+                        worldY -= speed/4 * 3;
+                    }
+                    break;
+                case "down_left":
+                    if (keyHandler.downPressed && keyHandler.leftPressed) {
+                        worldX -= speed/4 * 3;
+                        worldY += speed/4 * 3;
+                    }
+                    break;
+                case "down_right":
+                    if (keyHandler.downPressed && keyHandler.rightPressed) {
+                        worldX += speed/4 * 3;
+                        worldY += speed/4 * 3;
+                    }
+                    break;
             }
         }
         // Check event
@@ -129,6 +159,24 @@ public class Player extends Entity{
 
         // Check object collision
         pickUpObject(objectIndex);
+
+        if (invincible) {
+            invincibleCounter++;
+            if (invincibleCounter >= 60) {
+                invincible = false;
+                invincibleCounter = 0;
+            }
+        }
+    }
+
+    public void contactMonster(Entity monster) {
+        // Implement monster's attack
+        if (invincible) {
+            return;
+        }
+        currentLife -= 100; // -= monster.damage
+        invincible = true;
+        System.out.println("Monster hit! Remaining life: " + currentLife);
     }
 
     public BufferedImage getImage(String direction) {
@@ -137,6 +185,7 @@ public class Player extends Entity{
         // Make main character in titleState moving
         if (gp.gameState == gp.titleState)
             isIdle = false;
+
         return super.getImage(direction);
     }
 
@@ -160,10 +209,25 @@ public class Player extends Entity{
             case "down" -> getImage("down");
             case "left" -> getImage("left");
             case "right" -> getImage("right");
+            case "up_left" -> getImage("up_left");
+            case "up_right" -> getImage("up_right");
+            case "down_left" -> getImage("down_left");
+            case "down_right" -> getImage("down_right");
             default -> null;
         };
+        if (invincible) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+        }
         g2.drawImage(image, screenX, screenY, null);
-        g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+        g2.drawRect(screenX, screenY, gp.tileSize * 3, gp.tileSize * 4);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
+
+
+        // Debug
+//        g2.setFont(new Font("Arial", Font.BOLD, 26));
+//        g2.setColor(Color.WHITE);
+//        g2.drawString("Invincible time left: " + (60 - invincibleCounter), 10, 500);
     }
 
 

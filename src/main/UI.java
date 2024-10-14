@@ -103,18 +103,21 @@ public class UI {
 
         // Scale healthBar, armorBar, manaBar to precisely match the current state
         int width = (int)(sp.barWidth * (1.0 * gp.player.currentLife / gp.player.maxLife));
-        healthBar = sp.getObjectImage("health_bar_new", width, healthBar.getHeight());
+        if (width > 0) healthBar = sp.getObjectImage("health_bar_new", width, sp.barHeight);
+        else healthBar = null;
 
         width = (int)(sp.barWidth * (1.0 * gp.player.currentArmor / gp.player.maxArmor));
-        armorBar = sp.getObjectImage("armor_bar_new", width, armorBar.getHeight());
+        if (width > 0) armorBar = sp.getObjectImage("armor_bar_new", width, sp.barHeight);
+        else armorBar = null;
 
         width = (int)(sp.barWidth * (1.0 * gp.player.currentMana / gp.player.maxMana));
-        manaBar = sp.getObjectImage("mana_bar_new", width, manaBar.getHeight());
+        if (width > 0) manaBar = sp.getObjectImage("mana_bar_new", width, sp.barHeight);
+        else manaBar = null;
 
         // Draw health bar, armor bar, mana bar
-        g2.drawImage(healthBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1, null);
-        g2.drawImage(armorBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 29, null);
-        g2.drawImage(manaBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 56, null);
+        if (healthBar != null) g2.drawImage(healthBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1, null);
+        if (armorBar != null) g2.drawImage(armorBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 29, null);
+        if (manaBar != null) g2.drawImage(manaBar, x + 65 / 3 * 2 + 1, y + 14 / 3 * 2 + 1 + 56, null);
 
         // Draw text to show number
         String text = gp.player.currentLife + "/" + gp.player.maxLife;
@@ -167,7 +170,7 @@ public class UI {
 
 
 
-    String[] directionArray = {"down", "left", "right"};
+    String[] directionArray = {"down", "down_left", "left", "up_left", "up", "up_right", "right", "down_right"};
     int frameCounter = 0;
     int directionIndex = 0;
     private void drawTitleScreen() {
@@ -195,7 +198,7 @@ public class UI {
             String direction;
             frameCounter++;
             if (frameCounter >= 60) {
-                directionIndex = (directionIndex + 1) % 3;
+                directionIndex = (directionIndex + 1) % 8;
                 frameCounter = 0;
             }
             direction = directionArray[directionIndex];
@@ -204,9 +207,13 @@ public class UI {
                 case "down" -> gp.player.getImage("down");
                 case "left" -> gp.player.getImage("left");
                 case "right" -> gp.player.getImage("right");
+                case "up_left" -> gp.player.getImage("up_left");
+                case "up_right" -> gp.player.getImage("up_right");
+                case "down_left" -> gp.player.getImage("down_left");
+                case "down_right" -> gp.player.getImage("down_right");
                 default -> null;
             };
-            g2.drawImage(image, x, y, gp.tileSize * 2, gp.tileSize * 4, null);
+            g2.drawImage(image, x - 16 * 4, y - 16 * 4, 48 * 5, 64 * 5, null);
 
             // Menu
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));

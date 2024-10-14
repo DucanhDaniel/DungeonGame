@@ -8,8 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Random;
 
-// Store variables that will be use in player, monster and  NPC classes
 public class Entity {
     public BufferedImage image;
     public BufferedImage[] imageArray;
@@ -21,15 +21,18 @@ public class Entity {
 
     public int numAnimationFrames;
     public int actionLockCounter;
-    public BufferedImage[] up, down, left, right, idle_up, idle_left, idle_right, idle_down;
+    public BufferedImage[] up, down, left, right, up_left, up_right, down_left, down_right;
+    public BufferedImage[] idle_up, idle_left, idle_right, idle_down, idle_up_left, idle_up_right, idle_down_left, idle_down_right;
     public String direction = "down";
-    
+
     public int solidAreaDefaultX, solidAreaDefaultY;
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public boolean collisionOn = false;
     public String[] dialogues = new String[20];
     public GamePanel gp;
+
+    public int type = -1; // 0: Player, 1: NPC, 2: Monster
 
     // Character status
     public int maxLife;
@@ -41,6 +44,7 @@ public class Entity {
     }
 
     UtilityTool utilityTool = new UtilityTool();
+
     public BufferedImage getObjectImage(String imageFileName, int width, int height) {
         BufferedImage result = null;
         try {
@@ -53,7 +57,8 @@ public class Entity {
         return result;
     }
 
-    public void speak(){}
+    public void speak() {
+    }
 
     public BufferedImage setUp(String imagePath, int width, int height) {
         UtilityTool utilityTool = new UtilityTool();
@@ -73,42 +78,66 @@ public class Entity {
         down = new BufferedImage[numAnimationFrames];
         left = new BufferedImage[numAnimationFrames];
         right = new BufferedImage[numAnimationFrames];
+        up_left = new BufferedImage[numAnimationFrames];
+        up_right = new BufferedImage[numAnimationFrames];
+        down_left = new BufferedImage[numAnimationFrames];
+        down_right = new BufferedImage[numAnimationFrames];
+
         idle_down = new BufferedImage[numAnimationFrames];
         idle_up = new BufferedImage[numAnimationFrames];
         idle_left = new BufferedImage[numAnimationFrames];
         idle_right = new BufferedImage[numAnimationFrames];
+        idle_up_left = new BufferedImage[numAnimationFrames];
+        idle_up_right = new BufferedImage[numAnimationFrames];
+        idle_down_left = new BufferedImage[numAnimationFrames];
+        idle_down_right = new BufferedImage[numAnimationFrames];
+
     }
 
 
     int cnt = 0;
     // Total number of frames to change entity image
-    int numFramesToReverse = 5;
-    boolean isIdle = true;
+    public int numFramesToReverse = 5;
+    public boolean isIdle = true;
+
     public BufferedImage getImage(String direction) {
 
         BufferedImage[] image = switch (direction) {
             case "up" -> up;
             case "down" -> down;
             case "left" -> left;
-            case null, default -> right;
+            case "right" -> right;
+            case "up_left" -> up_left;
+            case "up_right" -> up_right;
+            case "down_left" -> down_left;
+            case "down_right" -> down_right;
+            default -> null;
         };
 
-        if (isIdle) {
-            switch (direction) {
-                case "up" -> image = idle_up;
-                case "down" -> {
-                    image = idle_down;
-                }
-                case "left" -> image = idle_left;
-                case null, default -> image = idle_right;
-            }
+        boolean isIdle1 = isIdle;
+        if (isIdle1) {
+            image = switch (direction) {
+                case "up" -> idle_up;
+                case "down" -> idle_down;
+                case "left" -> idle_left;
+                case "right" -> idle_right;
+                case "up_left" -> idle_up_left;
+                case "up_right" -> idle_up_right;
+                case "down_left" -> idle_down_left;
+                case "down_right" -> idle_down_right;
+                default -> null;
+            };
         }
         cnt++;
         for (int i = 0; i < numAnimationFrames - 1; i++) {
-            if (cnt <= numFramesToReverse*(i + 1)) return image[i];
+            if (cnt <= numFramesToReverse * (i + 1)) {
+                assert image != null;
+                return image[i];
+            }
         }
-        if (cnt > numFramesToReverse*numAnimationFrames)
+        if (cnt > numFramesToReverse * numAnimationFrames)
             cnt = 0;
+        assert image != null;
         return image[numAnimationFrames - 1];
     }
 
@@ -126,25 +155,62 @@ public class Entity {
                 case "down" -> getImage("down");
                 case "left" -> getImage("left");
                 case "right" -> getImage("right");
+
                 default -> null;
             };
             g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
             // Draw solid area for debugging purposes
-            g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+//            g2.setColor(Color.WHITE);
+//            g2.setStroke(new BasicStroke(3));
+//            g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
         }
     }
 
     public void setAction() {
+        actionLockCounter++;
 
+        if (actionLockCounter < 120) return;
+
+        Random random = new Random();
+        // Get a random number from 1 to 100
+        int i = random.nextInt(100) + 1;
+
+        if (i <= 20) {
+            direction = "up";
+            isIdle = false;
+        } else if (i <= 40) {
+            direction = "down";
+            isIdle = false;
+        } else if (i <= 60) {
+            direction = "left";
+            isIdle = false;
+        } else if (i <= 80) {
+            direction = "right";
+            isIdle = false;
+        } else {
+            isIdle = true;
+        }
+
+        actionLockCounter = 0;
     }
+
     public void update() {
         setAction();
         collisionOn = false;
         gp.collisionChecker.checkTile(this);
-        gp.collisionChecker.checkPlayer(this);
+        boolean contactPlayer = gp.collisionChecker.checkPlayer(this);
+
+        if (this.type == 2 && contactPlayer) {
+            gp.player.contactMonster(this);
+        }
         int objectIndex = gp.collisionChecker.checkObject(this, true);
+
+        gp.collisionChecker.checkEntity(this, gp.npc);
+        gp.collisionChecker.checkEntity(this, gp.monster);
+
         if (!collisionOn) {
+            if (isIdle) return;
             switch (direction) {
                 case "up":
                     worldY -= speed;
@@ -157,6 +223,22 @@ public class Entity {
                     break;
                 case "right":
                     worldX += speed;
+                    break;
+                case "up_left":
+                    worldX -= speed / 4 * 3;
+                    worldY -= speed / 4 * 3;
+                    break;
+                case "up_right":
+                    worldX += speed / 4 * 3;
+                    worldY -= speed / 4 * 3;
+                    break;
+                case "down_left":
+                    worldX -= speed / 4 * 3;
+                    worldY += speed / 4 * 3;
+                    break;
+                case "down_right":
+                    worldX += speed / 4 * 3;
+                    worldY += speed / 4 * 3;
                     break;
             }
         }

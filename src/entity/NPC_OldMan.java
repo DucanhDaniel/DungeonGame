@@ -11,12 +11,12 @@ public class NPC_OldMan extends Entity{
 
         setDefaultValue();
         setDialogue();
+        initializeAnimation();
 
-        super.initializeAnimation();
         getOldManImage();
     }
     public void setDefaultValue() {
-
+        type = 1;
         solidArea.setBounds(0, 20, 48, 28);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -40,36 +40,7 @@ public class NPC_OldMan extends Entity{
         }
     }
 
-    @Override
-    public void setAction() {
-        actionLockCounter++;
 
-        if (actionLockCounter < 180) return;
-
-        Random random = new Random();
-        // Get a random number from 1 to 100
-        int i = random.nextInt(100) + 1;
-
-        if (i <= 20) {
-            direction = "up";
-            isIdle = false;
-        }
-        else if (i <= 40) {
-            direction = "down";
-            isIdle = false;
-        } else if (i <= 60) {
-            direction = "left";
-            isIdle = false;
-        }
-        else if (i <= 80){
-            direction = "right";
-            isIdle = false;
-        } else {
-            isIdle = true;
-        }
-
-        actionLockCounter = 0;
-    }
 
     public void setDialogue() {
         dialogues[0] = "Hello, adventure!";
