@@ -1,10 +1,7 @@
 package main;
 
 import entity.NPC_OldMan;
-import obj.Boots;
-import obj.Chest;
-import obj.Door;
-import obj.Key;
+import entity.monster.GreenSlime;
 
 public class AssertSetter {
     GamePanel gp;
@@ -28,6 +25,21 @@ public class AssertSetter {
 //        gp.superObject[3] = new Key(gp);
 //        gp.superObject[3].worldX = gp.tileSize*26;
 //        gp.superObject[3].worldY = gp.tileSize*26;
+
+    }
+
+    public void setMonster() {
+        gp.monster[0] = new GreenSlime(gp);
+        gp.monster[0].worldX = gp.tileSize*20;
+        gp.monster[0].worldY = gp.tileSize*20;
+
+        gp.monster[1] = new GreenSlime(gp);
+        gp.monster[1].worldX = gp.tileSize*22;
+        gp.monster[1].worldY = gp.tileSize*22;
+
+        gp.monster[2] = new GreenSlime(gp);
+        gp.monster[2].worldX = gp.tileSize*24;
+        gp.monster[2].worldY = gp.tileSize*24;
 
     }
 

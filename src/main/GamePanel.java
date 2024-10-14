@@ -45,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable{
     public Player player = new Player(this, keyHandler);
     public Entity[] npc = new Entity[10];
     ArrayList<Entity> entityList= new ArrayList<>();
+    public Entity[] monster = new Entity[20];
 
     // Game state
     public int gameState;
@@ -72,6 +73,9 @@ public class GamePanel extends JPanel implements Runnable{
 
         // Place NPCs
         assertSetter.setNPC();
+
+        // Place monsters
+        assertSetter.setMonster();
 
         // Play background music
 //        playMusic(0);
@@ -119,6 +123,11 @@ public class GamePanel extends JPanel implements Runnable{
                 if (entity != null) entity.update();
             }
 
+            // Update monster
+            for (Entity entity : monster) {
+                if (entity!= null) entity.update();
+            }
+
             // Update player
             player.update();
         }
@@ -144,22 +153,55 @@ public class GamePanel extends JPanel implements Runnable{
             tileManager.draw(g2);
 
             // Add entity into entityList
+
             entityList.add(player);
-            for (Entity entity : npc) {
+            for (Entity entity : monster) {
                 if (entity!= null) entityList.add(entity);
+            }
+            for (Entity entity : npc) {
+                if (entity == null) continue;
+                entityList.add(entity);
             }
 
             for (Entity entity : superObject) {
-                if (entity!= null) entityList.add(entity);
+                if (entity == null) continue;
+                entityList.add(entity);
             }
 
             // Sort
-            entityList.sort(Comparator.comparingInt(o -> o.worldY));
+            entityList.sort(new Comparator<Entity>() {
+                @Override
+                public int compare(Entity o1, Entity o2) {
+                    if (o1.type == 0) o1.worldY += tileSize * 3 / 2;
+                    if (o2.type == 0) o2.worldY += tileSize * 3 / 2;
+                    if (o1.worldY < o2.worldY) {
+                        if (o1.type == 0) o1.worldY -= tileSize * 3 / 2;
+                        if (o2.type == 0) o2.worldY -= tileSize * 3 / 2;
+                        return -1;
+                    }
+                    if (o1.worldY > o2.worldY) {
+                        if (o1.type == 0) o1.worldY -= tileSize * 3 / 2;
+                        if (o2.type == 0) o2.worldY -= tileSize * 3 / 2;
+                        return 1;
+                    }
+                    if (o1.type == 0) o1.worldY -= tileSize * 3 / 2;
+                    if (o2.type == 0) o2.worldY -= tileSize * 3 / 2;
+                    return 0;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    return false;
+                }
+            });
 
             // Draw entity
             for (Entity entity : entityList) {
                 entity.draw(g2);
+                System.out.print(entity.type + " " + entity.worldY + " - ");
             }
+            System.out.println();
+
 
             entityList.clear();
 
