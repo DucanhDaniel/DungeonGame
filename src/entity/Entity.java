@@ -30,7 +30,7 @@ public class Entity {
     public boolean collisionOn = false;
     public String[] dialogues = new String[20];
     public GamePanel gp;
-    public int down1;
+    public BufferedImage down1;
 
     public int type = -1; // 0: Player, 1: NPC, 2: Monster
 

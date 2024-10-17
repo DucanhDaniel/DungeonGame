@@ -1,10 +1,11 @@
 package entity;
 
-import main.GamePanel;
-import main.KeyHandler;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import main.GamePanel;
+import main.KeyHandler;
+import obj.OBJ_Shield_Wood;
+import obj.OBJ_Sword_Normal;
 
 public class Player extends Entity{
     KeyHandler keyHandler;
@@ -56,7 +57,26 @@ public class Player extends Entity{
         currentMana = 200;
         maxArmor = 20;
         currentArmor = 20;
+        level = 1;
+        maxLife = 6;
+        life = maxLife;
+        strength = 1;
+        dexterity = 1;
+        exp = 0;
+        nextLevelExp = 5;
+        coin = 0;
+        currentWeapon = new OBJ_Sword_Normal(gp);
+        currentShield = new OBJ_Shield_Wood(gp);
+        attack = getAttack();
+        defense = getDefense();
+    }
 
+    public int getAttack(){
+        return attack = strength + currentWeapon.attackValue;
+    }
+
+    public int getDefense(){
+        return defense = dexterity + currentShield.defenseValue;
     }
 
     public void getPlayerImage() {

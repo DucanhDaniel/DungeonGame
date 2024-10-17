@@ -6,13 +6,13 @@ public class OBJ_Shield_Wood extends  Entity{
         super(gp);
 
         name = "Wood Shield";
-        down1 = setup("/object/shield_wood.png",gp.tileSize,gp.tileSize);
+        down1 = setUp("object/shield_wood",gp.tileSize,gp.tileSize);
         defenseValue = 1;
     }
 
-    private int setup(String string, int tileSize, int tileSize2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setup'");
-    }
+    // private int setup(String string, int tileSize, int tileSize2) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    // }
 }
 

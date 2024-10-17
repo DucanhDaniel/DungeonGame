@@ -8,12 +8,12 @@ public class OBJ_Sword_Normal extends Entity{
         super(gp);
 
         name = "Normal Sword";
-        down1 = setup("/object/sword_normal.png",gp.tileSize,gp.tileSize);
+        down1 = setUp("object/sword_normal",gp.tileSize,gp.tileSize);
         attackValue = 1;
     }
 
-    private int setup(String string, int tileSize, int tileSize2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setup'");
-    }
+    // private int setup(String string, int tileSize, int tileSize2) {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    // }
 }
