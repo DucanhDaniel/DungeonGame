@@ -16,13 +16,21 @@ public class Entity {
     public String name;
     public boolean collision = false;
 
+    public boolean attacking = false;
+
     public int worldX, worldY;
     public int speed;
 
     public int numAnimationFrames;
+
+
+    public int spriteNum = 1;
+    public int spriteCounter = 0;
     public int actionLockCounter;
     public BufferedImage[] up, down, left, right, up_left, up_right, down_left, down_right;
     public BufferedImage[] idle_up, idle_left, idle_right, idle_down, idle_up_left, idle_up_right, idle_down_left, idle_down_right;
+
+    public BufferedImage[] attack_up, attack_down, attack_left, attack_right, attack_up_left, attack_up_right, attack_down_left, attack_down_right;
     public String direction = "down";
 
     public int solidAreaDefaultX, solidAreaDefaultY;
@@ -92,6 +100,14 @@ public class Entity {
         idle_down_left = new BufferedImage[numAnimationFrames];
         idle_down_right = new BufferedImage[numAnimationFrames];
 
+        attack_up = new BufferedImage[numAnimationFrames];
+        attack_down = new BufferedImage[numAnimationFrames];
+        attack_left = new BufferedImage[numAnimationFrames];
+        attack_right = new BufferedImage[numAnimationFrames];
+        attack_up_left = new BufferedImage[numAnimationFrames];
+        attack_up_right = new BufferedImage[numAnimationFrames];
+        attack_down_left = new BufferedImage[numAnimationFrames];
+        attack_down_right = new BufferedImage[numAnimationFrames];
     }
 
 
@@ -128,6 +144,20 @@ public class Entity {
                 default -> null;
             };
         }
+
+        if (attacking) {
+            image = switch (direction) {
+                case "up" -> attack_up;
+                case "down" -> attack_down;
+                case "left" -> attack_left;
+                case "right" -> attack_right;
+                case "up_left" -> attack_up_left;
+                case "up_right" -> attack_up_right;
+                case "down_left" -> attack_down_left;
+                case "down_right" -> attack_down_right;
+                default -> null;
+            };
+        }
         cnt++;
         for (int i = 0; i < numAnimationFrames - 1; i++) {
             if (cnt <= numFramesToReverse * (i + 1)) {
@@ -135,8 +165,12 @@ public class Entity {
                 return image[i];
             }
         }
-        if (cnt > numFramesToReverse * numAnimationFrames)
+        if (cnt > numFramesToReverse * numAnimationFrames) {
             cnt = 0;
+            if (attacking) {
+                attacking = false;
+            }
+        }
         assert image != null;
         return image[numAnimationFrames - 1];
     }

@@ -39,6 +39,7 @@ public class Player extends Entity{
 
         super.initializeAnimation();
         getPlayerImage();
+        getPlayerAttackImage();
     }
     public void setDefaultValues() {
         type = 0;
@@ -82,11 +83,28 @@ public class Player extends Entity{
         }
     }
 
+    public void getPlayerAttackImage() {
+        int playerImageWidth = 48 * gp.scale;
+        int playerImageHeight = 64 * gp.scale;
+        for (int i = 1; i <= numAnimationFrames; i++) {
+            attack_up[i - 1] = setUp("player/attack/gun/up" + i, playerImageWidth, playerImageHeight);
+            attack_down[i - 1] = setUp("player/attack/gun/down" + i, playerImageWidth, playerImageHeight);
+            attack_left[i - 1] = setUp("player/attack/gun/left" + i, playerImageWidth, playerImageHeight);
+            attack_right[i - 1] = setUp("player/attack/gun/right" + i, playerImageWidth, playerImageHeight);
+            attack_up_left[i - 1] = setUp("player/attack/gun/left_up" + i, playerImageWidth, playerImageHeight);
+            attack_up_right[i - 1] = setUp("player/attack/gun/right_up" + i, playerImageWidth, playerImageHeight);
+            attack_down_left[i - 1] = setUp("player/attack/gun/left_down" + i, playerImageWidth, playerImageHeight);
+            attack_down_right[i - 1] = setUp("player/attack/gun/right_down" + i, playerImageWidth, playerImageHeight);
+        }
+    }
+
     public boolean doneInteractingNPC = false;
     @Override
     public void update() {
         // Update the player's direction based on the pressed keys'
-        if (keyHandler.upPressed) {
+        if (attacking == true) {
+            attacking();
+        } else if (keyHandler.upPressed) {
             if (keyHandler.rightPressed) direction = "up_right";
             else if (keyHandler.leftPressed) direction = "up_left";
             else direction = "up";
@@ -98,6 +116,7 @@ public class Player extends Entity{
         }
         else if (keyHandler.leftPressed) direction = "left";
         else if (keyHandler.rightPressed) direction = "right";
+        else if (keyHandler.enterPressed) attacking = true;
 
         // Check tile collision
         gp.collisionChecker.checkTile(this);
@@ -167,6 +186,10 @@ public class Player extends Entity{
                 invincibleCounter = 0;
             }
         }
+    }
+
+    public void attacking() {
+
     }
 
     public void contactMonster(Entity monster) {
