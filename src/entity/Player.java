@@ -19,6 +19,7 @@ public class Player extends Entity{
     public int maxArmor, currentArmor;
 
     public boolean invincible = false;
+    public boolean attackCanceled = false;
     public int invincibleCounter = 0;
 
     public Player(GamePanel gp, KeyHandler keyHandler) {
