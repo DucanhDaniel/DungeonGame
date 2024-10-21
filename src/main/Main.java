@@ -20,4 +20,10 @@ public class Main {
         gamePanel.startGameThread();
 
     }
+
+    // private static class GamePanel {
+
+    //     public GamePanel() {
+    //     }
+    // }
 }

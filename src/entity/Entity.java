@@ -1,14 +1,13 @@
 package entity;
 
-import main.GamePanel;
-import main.UtilityTool;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
+import javax.imageio.ImageIO;
+import main.GamePanel;
+import main.UtilityTool;
 
 public class Entity {
     public BufferedImage image;
@@ -31,12 +30,28 @@ public class Entity {
     public boolean collisionOn = false;
     public String[] dialogues = new String[20];
     public GamePanel gp;
+    public BufferedImage down1;
 
     public int type = -1; // 0: Player, 1: NPC, 2: Monster
 
     // Character status
     public int maxLife;
     public int currentLife;
+    public int life;
+    public int level;
+    public int strength;
+    public int dexterity;
+    public int attack;
+    public int defense;
+    public int exp;
+    public int nextLevelExp;
+    public int coin;
+    public Entity currentWeapon;
+    public Entity currentShield;
+
+    //Item attributes
+    public int attackValue;
+    public int defenseValue;
 
 
     public Entity(GamePanel gp) {
